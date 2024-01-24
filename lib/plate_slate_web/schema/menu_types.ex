@@ -5,11 +5,12 @@ defmodule PlateSlateWeb.Schema.MenuTypes do
 
   object :menu_item do
     interfaces([:search_result])
+
     field :id, :id
     field :name, :string
     field :description, :string
+    field :price, :decimal
     field :added_on, :date
-    # field :price, :float
   end
 
   @desc "Filtering options for the menu item list"
