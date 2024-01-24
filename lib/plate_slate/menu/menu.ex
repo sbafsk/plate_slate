@@ -6,6 +6,7 @@ defmodule PlateSlate.Menu do
   import Ecto.Query, warn: false
   alias PlateSlate.Repo
 
+  alias PlateSlate.Menu.Item
   alias PlateSlate.Menu.Category
 
   @doc """
@@ -102,8 +103,6 @@ defmodule PlateSlate.Menu do
     Category.changeset(category, %{})
   end
 
-  alias PlateSlate.Menu.Item
-
   @doc """
   Returns the list of items.
 
@@ -114,8 +113,8 @@ defmodule PlateSlate.Menu do
 
   """
 
-  def list_items(filters) do
-    filters
+  def list_items(args) do
+    args
     |> Enum.reduce(Item, fn
       {:order, order}, query ->
         query |> order_by({^order, :name})
@@ -136,6 +135,12 @@ defmodule PlateSlate.Menu do
 
       {:priced_belo, price}, query ->
         from q in query, where: q.price <= ^price
+
+      {:added_after, date}, query ->
+        from q in query, where: q.added_on >= ^date
+
+      {:added_before, date}, query ->
+        from q in query, where: q.added_on <= ^date
 
       {:category, category_name}, query ->
         from q in query,

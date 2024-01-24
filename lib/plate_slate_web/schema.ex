@@ -2,10 +2,10 @@ defmodule PlateSlateWeb.Schema do
   use Absinthe.Schema
   alias PlateSlateWeb.Resolvers
 
-  @desc "The list of available items on the menu"
+  import_types(__MODULE__.MenuTypes)
   query do
     field :menu_items, list_of(:menu_item) do
-      arg(:filter, non_null(:menu_item_filter))
+      arg(:filter, :menu_item_filter)
       arg(:order, type: :sort_order, default_value: :asc)
       resolve(&Resolvers.Menu.menu_items/3)
     end
@@ -25,21 +25,18 @@ defmodule PlateSlateWeb.Schema do
     value(:desc)
   end
 
-  @desc "Filtering options for the menu item list"
-  input_object :menu_item_filter do
-    @desc "Matching a name"
-    field :name, :string
+  scalar :date do
+    parse(fn input ->
+      with %Absinthe.Blueprint.Input.String{value: value} <- input,
+           {:ok, date} <- Date.from_iso8601(value) do
+        {:ok, date}
+      else
+        _ -> :error
+      end
+    end)
 
-    @desc "Matching a category name"
-    field :category, :string
-
-    @desc "Matching a tag"
-    field :tag, :string
-
-    @desc "Price above a value"
-    field :priced_above, :float
-
-    @desc "Price below a value"
-    field :priced_below, :float
+    serialize(fn date ->
+      Date.to_iso8601(date)
+    end)
   end
 end
