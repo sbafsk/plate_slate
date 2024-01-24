@@ -5,6 +5,12 @@ defmodule PlateSlateWeb.Resolvers.Menu do
     {:ok, Menu.list_items(args)}
   end
 
+  def create_item(_, %{input: params}, _) do
+    with {:ok, item} <- Menu.create_item(params) do
+      {:ok, item}
+    end
+  end
+
   def categories(_, args, _) do
     {:ok, Menu.list_categories(args)}
   end

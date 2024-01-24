@@ -4,6 +4,7 @@ defmodule PlateSlateWeb.Schema do
 
   import_types(__MODULE__.MenuTypes)
 
+  # QUERIES
   query do
     @desc "List of available items on the menu"
     field :menu_items, list_of(:menu_item) do
@@ -25,6 +26,17 @@ defmodule PlateSlateWeb.Schema do
       resolve(&Resolvers.Menu.search/3)
     end
   end
+
+  # MUTATIONS
+
+  mutation do
+    field :create_menu_item, :menu_item do
+      arg(:input, non_null(:menu_item_input))
+      resolve(&Resolvers.Menu.create_item/3)
+    end
+  end
+
+  # TYPES
 
   enum :sort_order do
     value(:asc)
