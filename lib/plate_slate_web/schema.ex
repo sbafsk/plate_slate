@@ -3,6 +3,7 @@ defmodule PlateSlateWeb.Schema do
   alias PlateSlateWeb.Resolvers
 
   import_types(__MODULE__.MenuTypes)
+  import_types(__MODULE__.OrderingTypes)
 
   # QUERIES
   query do
@@ -39,6 +40,26 @@ defmodule PlateSlateWeb.Schema do
       arg(:id, non_null(:id))
       arg(:input, non_null(:menu_item_input_update))
       resolve(&Resolvers.Menu.update_item/3)
+    end
+
+    field :place_order, :order_result do
+      arg(:input, non_null(:place_order_input))
+      resolve(&Resolvers.Ordering.place_order/3)
+    end
+  end
+
+  # SUBSCRIPTIONS
+
+  subscription do
+    field :new_order, :order do
+      config(fn _args, _info ->
+        {:ok, topic: "*", context_id: "global"}
+      end)
+
+      resolve(fn root, _, _ ->
+        IO.inspect(root)
+        {:ok, root}
+      end)
     end
   end
 

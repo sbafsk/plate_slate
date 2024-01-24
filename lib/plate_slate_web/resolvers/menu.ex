@@ -34,7 +34,6 @@ defmodule PlateSlateWeb.Resolvers.Menu do
     end)
   end
 
-  @spec format_error(Ecto.Changeset.Error) :: String.t()
   defp format_error({msg, opts}) do
     Enum.reduce(opts, msg, fn {key, value}, acc ->
       String.replace(acc, "%{#{key}}", to_string(value))
