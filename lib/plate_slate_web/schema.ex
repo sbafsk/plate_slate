@@ -9,15 +9,11 @@ defmodule PlateSlateWeb.Schema do
       arg(:order, type: :sort_order, default_value: :asc)
       resolve(&Resolvers.Menu.menu_items/3)
     end
-  end
-
-  @desc "This is an item of the menu"
-  object :menu_item do
-    field :id, :id
-    field :name, :string
-    field :description, :string
-    # @desc "Item's price"
-    # field :price, :float
+    @desc "Search for menu items or categories"
+    field :search, list_of(:search_result) do
+      arg(:matching, non_null(:string))
+      resolve(&Resolvers.Menu.search/3)
+    end
   end
 
   enum :sort_order do
