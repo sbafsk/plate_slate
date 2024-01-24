@@ -18,8 +18,24 @@ defmodule PlateSlate.Menu do
       [%Category{}, ...]
 
   """
-  def list_categories do
-    Repo.all(Category)
+
+  # def list_categories do
+  #   Repo.all(Category)
+  # end
+
+  def list_categories(args) do
+    args
+    |> Enum.reduce(Category, fn
+      {_, nil}, query ->
+        query
+
+      {:order, order}, query ->
+        query |> order_by({^order, :name})
+
+      {:name, name}, query ->
+        from q in query, where: ilike(q.name, ^"%#{name}%")
+    end)
+    |> Repo.all()
   end
 
   @doc """

@@ -22,6 +22,17 @@ defmodule PlateSlateWeb.Schema.MenuTypes do
     field :added_before, :date
     field :added_after, :date
   end
+
+  object :category do
+    interfaces([:search_result])
+    field :name, :string
+    field :description, :string
+
+    field :items, list_of(:menu_item) do
+      resolve(&Resolvers.Menu.items_for_category/3)
+    end
+  end
+
   interface :search_result do
     field :name, :string
 
