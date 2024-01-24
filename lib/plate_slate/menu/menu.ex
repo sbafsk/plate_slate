@@ -149,7 +149,7 @@ defmodule PlateSlate.Menu do
       {:priced_above, price}, query ->
         from q in query, where: q.price >= ^price
 
-      {:priced_belo, price}, query ->
+      {:priced_below, price}, query ->
         from q in query, where: q.price <= ^price
 
       {:added_after, date}, query ->

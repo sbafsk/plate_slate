@@ -180,4 +180,30 @@ defmodule PlateSlateWeb.Schema.Query.MenuItemsTest do
 
     assert expected == message
   end
+
+  @query """
+  query($filter: MenuItemFilter!) {
+    menuItems(filter: $filter) {
+      name
+      price
+    }
+  }
+  """
+
+  @variables %{"filter" => %{"priced_below" => "1.25"}}
+
+  test "menuItem filtered by priced below" do
+    response = get(build_conn(), "/api", query: @query, variables: @variables)
+
+    assert %{
+             "data" => %{
+               "menuItems" => [
+                 %{"name" => "Lemonade", "price" => "1.25"},
+                 %{"name" => "Papadum", "price" => "1.25"},
+                 %{"name" => "Water", "price" => "0"}
+               ]
+             }
+           } ==
+             json_response(response, 200)
+  end
 end

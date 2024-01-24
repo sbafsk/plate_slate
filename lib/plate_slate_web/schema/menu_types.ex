@@ -18,8 +18,8 @@ defmodule PlateSlateWeb.Schema.MenuTypes do
     field :name, :string
     field :category, :string
     field :tag, :string
-    field :priced_above, :float
-    field :priced_below, :float
+    field :priced_above, :decimal
+    field :priced_below, :decimal
     field :added_before, :date
     field :added_after, :date
   end
