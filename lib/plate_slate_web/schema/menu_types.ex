@@ -24,11 +24,18 @@ defmodule PlateSlateWeb.Schema.MenuTypes do
     field :added_after, :date
   end
 
-  input_object :menu_item_input do
+  input_object :menu_item_input_create do
     field :name, non_null(:string)
     field :description, :string
     field :price, non_null(:decimal)
     field :category_id, non_null(:id)
+  end
+
+  input_object :menu_item_input_update do
+    field :name, :string
+    field :description, :string
+    field :price, :decimal
+    field :category_id, :id
   end
 
   object :menu_item_result do

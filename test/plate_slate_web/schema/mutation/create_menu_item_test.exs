@@ -17,7 +17,7 @@ defmodule PlateSlateWeb.Schema.Query.CreateMenuItemTest do
   end
 
   @query """
-  mutation($menuItem: MenuItemInput!) {
+  mutation($menuItem: MenuItemInputCreate!) {
     createMenuItem(input: $menuItem) {
       errors { key message }
       menuItem {
