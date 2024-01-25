@@ -11,6 +11,27 @@ defmodule PlateSlateWeb.Schema.MenuTypes do
     field :description, :string
     field :price, :decimal
     field :added_on, :date
+    field :allergy_info, list_of(:allergy_info)
+  end
+
+  object :menu_item_result do
+    field :menu_item, :menu_item
+    field :errors, list_of(:input_error)
+  end
+
+  object :category do
+    interfaces([:search_result])
+    field :name, :string
+    field :description, :string
+
+    field :items, list_of(:menu_item) do
+      resolve(&Resolvers.Menu.items_for_category/3)
+    end
+  end
+
+  object :allergy_info do
+    field :allergen, :string
+    field :severity, :string
   end
 
   @desc "Filtering options for the menu item list"
@@ -36,21 +57,6 @@ defmodule PlateSlateWeb.Schema.MenuTypes do
     field :description, :string
     field :price, :decimal
     field :category_id, :id
-  end
-
-  object :menu_item_result do
-    field :menu_item, :menu_item
-    field :errors, list_of(:input_error)
-  end
-
-  object :category do
-    interfaces([:search_result])
-    field :name, :string
-    field :description, :string
-
-    field :items, list_of(:menu_item) do
-      resolve(&Resolvers.Menu.items_for_category/3)
-    end
   end
 
   interface :search_result do
