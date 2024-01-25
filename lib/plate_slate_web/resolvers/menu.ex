@@ -6,38 +6,15 @@ defmodule PlateSlateWeb.Resolvers.Menu do
   end
 
   def create_item(_, %{input: params}, _) do
-    case Menu.create_item(params) do
-      {:error, changeset} ->
-        {:ok, %{errors: transform_errors(changeset)}}
-
-      {:ok, menu_item} ->
-        {:ok, %{menu_item: menu_item}}
+    with {:ok, menu_item} <- Menu.create_item(params) do
+      {:ok, %{menu_item: menu_item}}
     end
   end
 
   def update_item(_, %{id: id, input: params}, _) do
-    case Menu.update_item(Menu.get_item!(id), params) do
-      {:error, changeset} ->
-        {:ok, %{errors: transform_errors(changeset)}}
-
-      {:ok, menu_item} ->
-        {:ok, %{menu_item: menu_item}}
+    with {:ok, menu_item} <- Menu.update_item(Menu.get_item!(id), params) do
+      {:ok, %{menu_item: menu_item}}
     end
-  end
-
-  defp transform_errors(changeset) do
-    changeset
-    |> Ecto.Changeset.traverse_errors(&format_error/1)
-    |> Enum.map(fn
-      {key, value} ->
-        %{key: key, message: value}
-    end)
-  end
-
-  defp format_error({msg, opts}) do
-    Enum.reduce(opts, msg, fn {key, value}, acc ->
-      String.replace(acc, "%{#{key}}", to_string(value))
-    end)
   end
 
   def categories(_, args, _) do
