@@ -29,6 +29,11 @@ defmodule PlateSlateWeb.Schema do
       arg(:matching, non_null(:string))
       resolve(&Resolvers.Menu.search/3)
     end
+
+    field :me, :user do
+      middleware(Middleware.Authorize, :any)
+      resolve(&Resolvers.Accounts.me/3)
+    end
   end
 
   # MUTATIONS
@@ -78,20 +83,47 @@ defmodule PlateSlateWeb.Schema do
 
   # MIDDLEWARES
 
-  def middleware(middleware, field, %{identifier: :allergy_info} = object) do
-    new_middleware = {Absinthe.Middleware.MapGet, to_string(field.identifier)}
-
+  def middleware(middleware, field, object) do
     middleware
-    |> Absinthe.Schema.replace_default(new_middleware, field, object)
+    |> apply(:errors, field, object)
+    |> apply(:get_string, field, object)
+    |> apply(:debug, field, object)
   end
 
-  def middleware(middleware, _field, %{identifier: :mutation}) do
+  defp apply(middleware, :errors, _field, %{identifier: :mutation}) do
     middleware ++ [Middleware.ChangesetErrors]
   end
 
-  def middleware(middleware, _field, _object) do
+  defp apply([], :get_string, field, %{identifier: :allergy_info}) do
+    [{Absinthe.Middleware.MapGet, to_string(field.identifier)}]
+  end
+
+  defp apply(middleware, :debug, _field, _object) do
+    if System.get_env("DEBUG") do
+      [{Middleware.Debug, :start}] ++ middleware
+    else
+      middleware
+    end
+  end
+
+  defp apply(middleware, _, _, _) do
     middleware
   end
+
+  # def middleware(middleware, field, %{identifier: :allergy_info} = object) do
+  #   new_middleware = {Absinthe.Middleware.MapGet, to_string(field.identifier)}
+
+  #   middleware
+  #   |> Absinthe.Schema.replace_default(new_middleware, field, object)
+  # end
+
+  # def middleware(middleware, _field, %{identifier: :mutation}) do
+  #   middleware ++ [Middleware.ChangesetErrors]
+  # end
+
+  # def middleware(middleware, _field, _object) do
+  #   middleware
+  # end
 
   # SUBSCRIPTIONS
 

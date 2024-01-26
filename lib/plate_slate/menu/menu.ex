@@ -19,7 +19,7 @@ defmodule PlateSlate.Menu do
 
   """
 
-  # def list_categories do
+  # def list_categories do`
   #   Repo.all(Category)
   # end
 
@@ -36,6 +36,19 @@ defmodule PlateSlate.Menu do
         from q in query, where: ilike(q.name, ^"%#{name}%")
     end)
     |> Repo.all()
+  end
+
+  @doc """
+  Returns the list of categories by id.
+  """
+
+  def categories_by_id(_, ids) do
+    Category
+    |> where([c], c.id in ^Enum.uniq(ids))
+    |> Repo.all()
+    |> Map.new(fn category ->
+      {category.id, category}
+    end)
   end
 
   @doc """
