@@ -97,14 +97,17 @@ defmodule PlateSlateWeb.Schema do
 
   subscription do
     field :new_order, :order do
-      config(fn _args, _info ->
-        {:ok, topic: "*"}
-      end)
+      config(fn _args, %{context: context} ->
+        case context[:current_user] do
+          %{role: "customer", id: id} ->
+            {:ok, topic: id}
 
-      trigger([:place_order], topic: fn _arg -> "*" end)
+          %{role: "employee"} ->
+            {:ok, topic: "*"}
 
-      resolve(fn %{order: order}, _, _ ->
-        {:ok, order}
+          _ ->
+            {:error, "unauthorized"}
+        end
       end)
     end
 
