@@ -13,7 +13,10 @@ defmodule PlateSlateWeb.Schema.Query.CreateMenuItemTest do
       |> Map.fetch!(:id)
       |> to_string
 
-    {:ok, category_id: category_id}
+    employee = Factory.create_user("employee")
+    customer = Factory.create_user("customer")
+
+    {:ok, category_id: category_id, employee: employee, customer: customer}
   end
 
   @query """
@@ -29,7 +32,10 @@ defmodule PlateSlateWeb.Schema.Query.CreateMenuItemTest do
   }
   """
 
-  test "createMenuItem field creates an item", %{category_id: category_id} do
+  test "createMenuItem field creates an item", %{
+    category_id: category_id,
+    employee: employee
+  } do
     menu_item = %{
       "name" => "French Dip",
       "description" => "Roast beef, caramelized onions, horseradish, ...",
@@ -37,7 +43,10 @@ defmodule PlateSlateWeb.Schema.Query.CreateMenuItemTest do
       "category_id" => category_id
     }
 
-    response = post build_conn(), "/api", query: @query, variables: %{"menuItem" => menu_item}
+    response =
+      post build_conn() |> auth_user(employee), "/api",
+        query: @query,
+        variables: %{"menuItem" => menu_item}
 
     assert json_response(response, 200) == %{
              "data" => %{
@@ -53,7 +62,10 @@ defmodule PlateSlateWeb.Schema.Query.CreateMenuItemTest do
            }
   end
 
-  test "creates a menu item with an existing name fails", %{category_id: category_id} do
+  test "creates a menu item with an existing name fails", %{
+    category_id: category_id,
+    employee: employee
+  } do
     menu_item = %{
       "name" => "Reuben",
       "description" => "Roast beef, caramelized onions, horseradish, ...",
@@ -61,7 +73,10 @@ defmodule PlateSlateWeb.Schema.Query.CreateMenuItemTest do
       "category_id" => category_id
     }
 
-    response = post build_conn(), "/api", query: @query, variables: %{"menuItem" => menu_item}
+    response =
+      post build_conn() |> auth_user(employee), "/api",
+        query: @query,
+        variables: %{"menuItem" => menu_item}
 
     assert json_response(response, 200) == %{
              "data" => %{
@@ -73,5 +88,38 @@ defmodule PlateSlateWeb.Schema.Query.CreateMenuItemTest do
                }
              }
            }
+  end
+
+  test "must be authorized as an employee to do menu item creation", %{
+    category_id: category_id,
+    customer: customer
+  } do
+    menu_item = %{
+      "name" => "Reuben Deluxe",
+      "description" => "Roast beef, caramelized onions, horseradish, ...",
+      "price" => "5.75",
+      "category_id" => category_id
+    }
+
+    response =
+      post build_conn() |> auth_user(customer), "/api",
+        query: @query,
+        variables: %{"menuItem" => menu_item}
+
+    assert json_response(response, 200) == %{
+             "data" => %{"createMenuItem" => nil},
+             "errors" => [
+               %{
+                 "locations" => [%{"column" => 3, "line" => 2}],
+                 "message" => "unauthorized",
+                 "path" => ["createMenuItem"]
+               }
+             ]
+           }
+  end
+
+  defp auth_user(conn, user) do
+    token = PlateSlateWeb.Authentication.sign(%{role: user.role, id: user.id})
+    put_req_header(conn, "authorization", "Bearer #{token}")
   end
 end
