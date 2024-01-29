@@ -14,9 +14,14 @@
       <section class="container">
         <nav>
           <ul>
-            <li><a href="https://hexdocs.pm/phoenix/overview.html">Get Started</a></li>
+            <%!-- <li><a href="https://hexdocs.pm/phoenix/overview.html">Get Started</a></li>
             <%= if function_exported?(Routes, :live_dashboard_path, 2) do %>
               <li><%= link "LiveDashboard", to: Routes.live_dashboard_path(@conn, :home) %></li>
+            <% end %> --%>
+            <%= if @conn.assigns[:current_user] do %>
+              <li><%= link "Logout", to: Routes.session_path(@conn, :delete),
+              method: :delete,
+              class: "btn btn-danger btn-xs" %></li>
             <% end %>
           </ul>
         </nav>
