@@ -163,6 +163,23 @@ defmodule PlateSlateWeb.Schema do
     end
   end
 
+  # DATALOADER the juice master :B
+
+  def dataloader() do
+    alias PlateSlate.Menu
+
+    Dataloader.new()
+    |> Dataloader.add_source(Menu, Menu.data())
+  end
+
+  def context(ctx) do
+    Map.put(ctx, :loader, dataloader())
+  end
+
+  def plugins do
+    [Absinthe.Middleware.Dataloader | Absinthe.Plugin.defaults()]
+  end
+
   # TYPES
 
   enum :sort_order do

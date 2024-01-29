@@ -1,7 +1,9 @@
 defmodule PlateSlateWeb.Schema.MenuTypes do
   use Absinthe.Schema.Notation
 
-  alias PlateSlateWeb.Resolvers
+  alias PlateSlate.Menu
+
+  import Absinthe.Resolution.Helpers, only: [dataloader: 2]
 
   object :menu_item do
     interfaces([:search_result])
@@ -14,7 +16,7 @@ defmodule PlateSlateWeb.Schema.MenuTypes do
     field :allergy_info, list_of(:allergy_info)
 
     field :category, :category do
-      resolve(&Resolvers.Menu.category_for_item/3)
+      resolve(dataloader(Menu, :categories))
     end
   end
 
@@ -29,7 +31,9 @@ defmodule PlateSlateWeb.Schema.MenuTypes do
     field :description, :string
 
     field :items, list_of(:menu_item) do
-      resolve(&Resolvers.Menu.items_for_category/3)
+      arg(:filter, :menu_item_filter)
+      arg(:order, type: :sort_order, default_value: :asc)
+      resolve(dataloader(Menu, :items))
     end
   end
 
