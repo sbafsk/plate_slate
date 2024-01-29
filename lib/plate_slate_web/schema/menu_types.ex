@@ -16,7 +16,7 @@ defmodule PlateSlateWeb.Schema.MenuTypes do
     field :allergy_info, list_of(:allergy_info)
 
     field :category, :category do
-      resolve(dataloader(Menu, :categories))
+      resolve(dataloader(Menu, :category))
     end
   end
 

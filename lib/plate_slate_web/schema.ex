@@ -7,6 +7,8 @@ defmodule PlateSlateWeb.Schema do
   import_types(__MODULE__.MenuTypes)
   import_types(__MODULE__.OrderingTypes)
   import_types(__MODULE__.AccountTypes)
+  import_directives(Absinthe.Phoenix.Types)
+  import_types(Absinthe.Phoenix.Types)
 
   # QUERIES
   query do
