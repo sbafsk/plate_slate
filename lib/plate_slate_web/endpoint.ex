@@ -17,6 +17,8 @@ defmodule PlateSlateWeb.Endpoint do
     websocket: [connect_info: [:peer_data]],
     longpoll: false
 
+  plug CORSPlug
+
   # Serve at "/" the static files from "priv/static" directory.
   #
   # You should set gzip to true if you are running phx.digest

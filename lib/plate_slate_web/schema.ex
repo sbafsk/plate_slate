@@ -19,6 +19,11 @@ defmodule PlateSlateWeb.Schema do
       resolve(&Resolvers.Menu.menu_items/3)
     end
 
+    field :menu_item, :menu_item do
+      arg(:id, non_null(:id))
+      resolve(&Resolvers.Menu.get_item/3)
+    end
+
     @desc "List of available categories"
     field :categories, list_of(:category) do
       arg(:name, :string)
@@ -165,7 +170,7 @@ defmodule PlateSlateWeb.Schema do
     end
   end
 
-  # DATALOADER the juice master :B
+  # DATALOADER
 
   def dataloader() do
     alias PlateSlate.Menu
